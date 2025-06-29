@@ -10,6 +10,105 @@ interface ResultsTableProps {
   query: string;
 }
 
+export const TaskDetails: React.FC<{
+  result: SearchResult | null;
+  hasSearched: boolean;
+  duration: string;
+  isGeneratingDuration: boolean;
+  durationError: string | null;
+  generateDuration: () => void;
+}> = ({ result, hasSearched, duration, isGeneratingDuration, durationError, generateDuration }) => {
+  if (!hasSearched || !result) return null;
+  const { item } = result;
+  return (
+    <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
+      <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
+        <h3 className="text-xl font-semibold text-white">
+          Task Details
+        </h3>
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
+        <div className="p-6 hover:bg-gray-50 transition-colors">
+          <div className="flex items-start gap-4">
+            <div className="p-2 bg-blue-100 rounded-lg">
+              <Clock className="w-5 h-5 text-blue-600" />
+            </div>
+            <div className="flex-1">
+              <div className="flex flex-col items-start mb-2 gap-1">
+                <h4 className="font-semibold text-gray-900">Duration</h4>
+                {!isGeneratingDuration && !durationError && duration && (
+                  <button
+                    onClick={generateDuration}
+                    className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center gap-1 mt-1"
+                  >
+                    <Settings className="w-4 h-4" />
+                    Regenerate
+                  </button>
+                )}
+              </div>
+              {isGeneratingDuration && (
+                <div className="flex items-center gap-3 py-4">
+                  <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+                  <div>
+                    <p className="text-blue-700 font-medium">Estimating duration...</p>
+                    <p className="text-sm text-blue-600">AI is analyzing task complexity</p>
+                  </div>
+                </div>
+              )}
+              {durationError && (
+                <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                  <div className="flex items-start gap-3">
+                    <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
+                    <div>
+                      <p className="text-red-800 font-medium">Failed to estimate duration</p>
+                      <p className="text-sm text-red-600 mt-1">{durationError}</p>
+                      <button
+                        onClick={generateDuration}
+                        className="mt-3 text-sm bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded-lg transition-colors"
+                      >
+                        Try Again
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+              {duration && !isGeneratingDuration && !durationError && (
+                <p className="text-gray-700 leading-relaxed font-medium text-lg">{duration}</p>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="p-6 hover:bg-gray-50 transition-colors">
+          <div className="flex items-start gap-4">
+            <div className="p-2 bg-green-100 rounded-lg">
+              <Zap className="w-5 h-5 text-green-600" />
+            </div>
+            <div className="flex-1">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-semibold text-gray-900">Actions</h4>
+              </div>
+              <p className="text-gray-700 leading-relaxed break-words whitespace-pre-line">{item.Actions}</p>
+            </div>
+          </div>
+        </div>
+        <div className="p-6 hover:bg-gray-50 transition-colors">
+          <div className="flex items-start gap-4">
+            <div className="p-2 bg-purple-100 rounded-lg">
+              <Target className="w-5 h-5 text-purple-600" />
+            </div>
+            <div className="flex-1">
+              <div className="flex justify-between items-start mb-2">
+                <h4 className="font-semibold text-gray-900">Objects</h4>
+              </div>
+              <p className="text-gray-700 leading-relaxed break-words whitespace-pre-line">{item.Objects}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const ResultsTable: React.FC<ResultsTableProps> = ({ result, hasSearched, query }) => {
   const [instructions, setInstructions] = useState<string>('');
   const [isGeneratingInstructions, setIsGeneratingInstructions] = useState(false);
@@ -203,100 +302,7 @@ export const ResultsTable: React.FC<ResultsTableProps> = ({ result, hasSearched,
   const confidenceScore = score ? Math.round((1 - score) * 100) : 100;
 
   return (
-    <div className="w-full max-w-4xl mx-auto mt-8 space-y-6">
-      {/* Results Table */}
-      <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
-        <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-4">
-          <h3 className="text-xl font-semibold text-white">
-            Task Details
-          </h3>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-gray-200">
-          <div className="p-6 hover:bg-gray-50 transition-colors">
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <Clock className="w-5 h-5 text-blue-600" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-semibold text-gray-900">Duration</h4>
-                  {!isGeneratingDuration && !durationError && duration && (
-                    <button
-                      onClick={generateDuration}
-                      className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors flex items-center gap-1"
-                    >
-                      <Settings className="w-4 h-4" />
-                      Regenerate
-                    </button>
-                  )}
-                </div>
-                
-                {isGeneratingDuration && (
-                  <div className="flex items-center gap-3 py-4">
-                    <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
-                    <div>
-                      <p className="text-blue-700 font-medium">Estimating duration...</p>
-                      <p className="text-sm text-blue-600">AI is analyzing task complexity</p>
-                    </div>
-                  </div>
-                )}
-
-                {durationError && (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <div className="flex items-start gap-3">
-                      <AlertCircle className="w-5 h-5 text-red-600 mt-0.5" />
-                      <div>
-                        <p className="text-red-800 font-medium">Failed to estimate duration</p>
-                        <p className="text-sm text-red-600 mt-1">{durationError}</p>
-                        <button
-                          onClick={generateDuration}
-                          className="mt-3 text-sm bg-red-100 hover:bg-red-200 text-red-700 px-3 py-1 rounded-lg transition-colors"
-                        >
-                          Try Again
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {duration && !isGeneratingDuration && !durationError && (
-                  <p className="text-gray-700 leading-relaxed font-medium text-lg">{duration}</p>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 hover:bg-gray-50 transition-colors">
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-green-100 rounded-lg">
-                <Zap className="w-5 h-5 text-green-600" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-semibold text-gray-900">Actions</h4>
-                </div>
-                <p className="text-gray-700 leading-relaxed">{item.Actions}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="p-6 hover:bg-gray-50 transition-colors">
-            <div className="flex items-start gap-4">
-              <div className="p-2 bg-purple-100 rounded-lg">
-                <Target className="w-5 h-5 text-purple-600" />
-              </div>
-              <div className="flex-1">
-                <div className="flex justify-between items-start mb-2">
-                  <h4 className="font-semibold text-gray-900">Objects</h4>
-                </div>
-                <p className="text-gray-700 leading-relaxed">{item.Objects}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
+    <div className="w-full max-w-5xl ml-auto mt-8 space-y-6">
       {/* Instructions Section */}
       <div className="bg-white rounded-xl shadow-lg border border-gray-200 overflow-hidden">
         <div className="bg-gradient-to-r from-orange-600 to-orange-700 px-6 py-4">

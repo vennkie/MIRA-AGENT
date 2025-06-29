@@ -25,7 +25,7 @@ Objects: ${objects}
 
 CRITICAL FORMATTING REQUIREMENTS - FOLLOW EXACTLY:
 - Do NOT use asterisks (*) anywhere in your response
-- Generate exactly 8 steps total
+- Generate 5 to 7 steps total
 - Each step MUST be on a single line with this EXACT format:
   "1. [Concise step description]: DUR [time estimate] Type: [instruction type]"
 - Keep each step concise but informative - include key details without being overly verbose
@@ -46,7 +46,7 @@ EXACT FORMAT EXAMPLE - COPY THIS STRUCTURE:
 7. Strain tea leaves from liquid: DUR 1 minute Type: Simple Instruction
 8. Pour tea into cups and serve: DUR 2 minutes Type: Simple Instruction
 
-IMPORTANT: Each step must be on ONE LINE with DUR and Type on the same line as the step description. Keep steps concise but informative. Generate exactly 8 steps.`;
+IMPORTANT: Each step must be on ONE LINE with DUR and Type on the same line as the step description. Keep steps concise but informative. Generate 5 to 7 steps in total`;
 };
 
 const generateWithGroq = async (description: string, actions: string, objects: string): Promise<string> => {
